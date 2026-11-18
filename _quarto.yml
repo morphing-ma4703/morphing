@@ -1,0 +1,32 @@
+project:
+  type: website
+  output-dir: docs        # GitHub Pages publica desde esta carpeta
+
+website:
+  title: "Morphing con Transporte Óptimo"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - href: proyecto.ipynb
+        text: Código
+    right:
+      - icon: github
+        href: https://github.com/USUARIO/NOMBRE-REPO   # TODO: cambiar
+  page-footer:
+    center: "MA4703-1 Control Óptimo · Universidad de Chile · 2026"
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-title: "Contenido"
+    code-fold: true          # el código del notebook aparece plegado
+    code-tools: true
+    html-math-method: mathjax
+    lang: es
+
+execute:
+  freeze: auto               # no re-ejecuta el notebook; usa las salidas guardadas

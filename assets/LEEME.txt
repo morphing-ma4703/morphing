@@ -1,0 +1,5 @@
+Pon aquí los GIFs e imágenes con estos nombres (o cambia los nombres en index.qmd):
+  morphing_principal.gif
+  ejemplo1_inicio.png, ejemplo1.gif, ejemplo1_final.png
+  ejemplo2_inicio.png, ejemplo2.gif, ejemplo2_final.png
+Idealmente cada GIF bajo ~5 MB.

@@ -1,0 +1,89 @@
+---
+title: "Interpolación entre imágenes vía transporte óptimo dinámico"
+subtitle: "Un enfoque de control óptimo (Benamou–Brenier)"
+author:
+  - Nombre Apellido 1   # TODO
+  - Nombre Apellido 2   # TODO
+date: "2026"
+---
+
+<!-- TODO: reemplazar por el GIF principal del proyecto -->
+![](assets/morphing_principal.gif){fig-align="center" width="70%"}
+
+## Resumen
+
+<!-- TODO: 2–3 frases. Ejemplo: -->
+Dadas dos imágenes, buscamos la forma "más económica" de transformar una en otra.
+Interpretamos cada imagen como una distribución de masa y calculamos la
+trayectoria de transporte óptimo entre ambas, formulada como un problema de
+control óptimo: la densidad es el estado y el campo de velocidades es el control.
+
+## El problema
+
+Sean $\rho_0$ y $\rho_1$ dos densidades (las imágenes normalizadas) en un dominio
+$\Omega \subset \mathbb{R}^2$. La formulación dinámica de Benamou–Brenier busca
+
+$$
+\min_{\rho,\, v} \; \int_0^1 \!\! \int_\Omega \frac{1}{2}\, \rho(t,x)\, |v(t,x)|^2 \, dx\, dt
+$$
+
+sujeto a la ecuación de continuidad y las condiciones de borde
+
+$$
+\partial_t \rho + \nabla \cdot (\rho v) = 0, \qquad \rho(0,\cdot) = \rho_0, \qquad \rho(1,\cdot) = \rho_1 .
+$$
+
+El valor óptimo coincide con $\tfrac12 W_2^2(\rho_0,\rho_1)$, la distancia de
+Wasserstein, y la trayectoria $\rho(t,\cdot)$ es la interpolación (el *morphing*).
+
+## Convexificación
+
+Con el cambio de variables $m = \rho v$ (momento), el problema queda
+
+$$
+\min_{\rho,\, m} \; \int_0^1 \!\! \int_\Omega \frac{|m|^2}{2\rho}\, dx\, dt
+\quad \text{s.a.} \quad \partial_t \rho + \nabla \cdot m = 0 ,
+$$
+
+que es **convexo**: el integrando $(\rho, m) \mapsto |m|^2 / 2\rho$ es convexo y la
+restricción es lineal.
+
+## Método numérico
+
+<!-- TODO: describir lo que implementaron. Por ejemplo: discretización en
+grilla espacio-tiempo, algoritmo usado (Benamou–Brenier / proximal splitting
+de Papadakis–Peyré–Oudet), número de iteraciones, resolución, etc. -->
+
+- Discretización: ...
+- Algoritmo: ...
+- Criterio de parada: ...
+
+## Resultados
+
+<!-- TODO: un bloque por ejemplo. Imagen inicial → GIF → imagen final -->
+
+::: {layout-ncol=3}
+![Imagen inicial](assets/ejemplo1_inicio.png)
+
+![Interpolación](assets/ejemplo1.gif)
+
+![Imagen final](assets/ejemplo1_final.png)
+:::
+
+::: {layout-ncol=3}
+![Imagen inicial](assets/ejemplo2_inicio.png)
+
+![Interpolación](assets/ejemplo2.gif)
+
+![Imagen final](assets/ejemplo2_final.png)
+:::
+
+## Código
+
+El código completo está en la pestaña [Código](proyecto.ipynb) y en el
+[repositorio de GitHub](https://github.com/USUARIO/NOMBRE-REPO). <!-- TODO -->
+
+## Referencias
+
+- J.-D. Benamou y Y. Brenier (2000). *A computational fluid mechanics solution to the Monge–Kantorovich mass transfer problem.* Numerische Mathematik, 84(3), 375–393.
+- N. Papadakis, G. Peyré y E. Oudet (2014). *Optimal transport with proximal splitting.* SIAM Journal on Imaging Sciences, 7(1), 212–238.
