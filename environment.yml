@@ -1,0 +1,11 @@
+name: morphing
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - jupyter
+  - numpy
+  - matplotlib
+  - scipy
+  - imageio
+prefix: C:\Users\Admin\miniconda3\envs\morphing

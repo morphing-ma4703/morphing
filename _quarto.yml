@@ -12,7 +12,7 @@ website:
         text: Código
     right:
       - icon: github
-        href: https://github.com/USUARIO/NOMBRE-REPO   # TODO: cambiar
+        href: https://github.com/morphing-ma4703/morphing   # TODO: cambiar
   page-footer:
     center: "MA4703-1 Control Óptimo · Universidad de Chile · 2026"
 
@@ -24,7 +24,7 @@ format:
     toc: true
     toc-title: "Contenido"
     code-fold: true          # el código del notebook aparece plegado
-    code-tools: true
+    #code-tools: true
     html-math-method: mathjax
     lang: es
 

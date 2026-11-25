@@ -2,13 +2,13 @@
 title: "Interpolación entre imágenes vía transporte óptimo dinámico"
 subtitle: "Un enfoque de control óptimo (Benamou–Brenier)"
 author:
-  - Nombre Apellido 1   # TODO
-  - Nombre Apellido 2   # TODO
-date: "2026"
+  - Felipe Cornejo   # TODO
+  - Nabil Orellana   # TODO
+date: "25 Noviembre 2026"
 ---
 
 <!-- TODO: reemplazar por el GIF principal del proyecto -->
-![](assets/morphing_principal.gif){fig-align="center" width="70%"}
+![](assets/cadena.gif){fig-align="center" width="70%"}
 
 ## Resumen
 
@@ -50,38 +50,99 @@ restricción es lineal.
 
 ## Método numérico
 
-<!-- TODO: describir lo que implementaron. Por ejemplo: discretización en
-grilla espacio-tiempo, algoritmo usado (Benamou–Brenier / proximal splitting
-de Papadakis–Peyré–Oudet), número de iteraciones, resolución, etc. -->
+Seguimos el esquema de *proximal splitting* de Papadakis, Peyré y Oudet (2014).
 
-- Discretización: ...
-- Algoritmo: ...
-- Criterio de parada: ...
+**Discretización.** Usamos una grilla espacio-tiempo de $N \times P$ puntos en $(x,y)$ y $Q$ en $t$.
+Las variables viven en una **grilla escalonada** $U$: cada componente de $(m_x, m_y, \rho)$ está
+en las caras perpendiculares a su eje, lo que permite escribir la divergencia
+$\partial_t \rho + \nabla\cdot m$ de forma exacta y simple. La energía se evalúa en una
+**grilla centrada** $V = \mathcal{I}(U)$, que se obtiene promediando caras vecinas.
+
+**Problema discreto.** Con la condición de consenso $V = \mathcal{I}(U)$, el problema queda como
+una suma de tres funciones convexas:
+
+$$
+\min_{U,\,V}\; J(V) \;+\; \iota_{\{\operatorname{div} U = 0\}}(U) \;+\; \iota_{\{V = \mathcal{I}(U),\ \rho(0)=\rho_0,\ \rho(1)=\rho_1\}}(U,V),
+$$
+
+donde $J(V) = \sum |m|^2 / 2\rho$ e $\iota$ es la indicatriz del conjunto (0 dentro, $+\infty$ fuera).
+
+**Algoritmo.** Usamos Douglas–Rachford de promedio paralelo (PPXA): en cada iteración se aplica el
+operador proximal de cada término por separado y se promedian los resultados. Los tres pasos tienen
+solución explícita:
+
+1. **Prox de la energía**, punto a punto: $\rho^\star$ es la raíz positiva de la cúbica
+   $(\rho-\tilde\rho)(\rho+\gamma)^2 - \tfrac{\gamma}{2}|\tilde m|^2 = 0$, que se resuelve por Newton,
+   y luego $m^\star = \frac{\rho^\star}{\rho^\star+\gamma}\,\tilde m$.
+2. **Proyección sobre la continuidad**: se resuelve una ecuación de Poisson 3D con condiciones de
+   Neumann mediante la transformada coseno (DCT), y se corrige $U \leftarrow U - \nabla p$ solo en
+   las caras interiores. Así se preservan los datos $\rho_0, \rho_1$ y la condición de no-flujo en el borde.
+3. **Proyección de consenso** $V = \mathcal{I}(U)$: es una proyección afín pequeña, que se resuelve
+   línea por línea a lo largo de cada eje con una pseudoinversa precalculada. La implementación
+   procesa todas las líneas de un eje en un solo producto matricial.
+
+**Parámetros.** $\gamma = 1/230$, $\mu = 1.98$ y pesos $\omega = (\tfrac13, \tfrac13, \tfrac13)$.
+Partimos de la mezcla lineal $(1-t)\rho_0 + t\rho_1$ y hacemos entre 500 y 1000 iteraciones,
+monitoreando $\|\operatorname{div} U\|_\infty$.
+
+**Costos generalizados.** Cambiando $\rho$ por $\rho^\beta$ en la energía, solo cambia el polinomio
+del paso 1. Con $\beta = 1$ se recupera el transporte óptimo y con $\beta = 0$ la mezcla lineal.
+
+**Implementación.** Todo está programado desde cero en Julia (con FFTW para la DCT). Cada pieza
+tiene un test propio: adjunto de $\mathcal{I}$, raíz de la cúbica, solver de Poisson (orden 2),
+$\operatorname{div} = 0$ tras la proyección, y equivalencia entre la versión vectorizada de la
+proyección de consenso y la original.
 
 ## Resultados
 
 <!-- TODO: un bloque por ejemplo. Imagen inicial → GIF → imagen final -->
 
-::: {layout-ncol=3}
-![Imagen inicial](assets/ejemplo1_inicio.png)
-
-![Interpolación](assets/ejemplo1.gif)
-
-![Imagen final](assets/ejemplo1_final.png)
+::: {layout-ncol=1}
+![Traslado optimo v/s transformacion lineal](assets/Gaussianas.gif){fig-align="center" width="50%"}
 :::
 
 ::: {layout-ncol=3}
-![Imagen inicial](assets/ejemplo2_inicio.png)
+![Imagen inicial](imagenes/estrella.png){fig-align="center" width="50%"}
 
-![Interpolación](assets/ejemplo2.gif)
+![Interpolación](assets/comparacion.gif)
 
-![Imagen final](assets/ejemplo2_final.png)
+![Imagen final](imagenes/corazon.png){fig-align="center" width="50%"}
 :::
+
+::: {layout-ncol=3}
+![Imagen inicial](imagenes/disco.png){fig-align="center" width="50%"}
+
+![Interpolación](assets/disco_dos_discos.gif)
+
+![Imagen final](imagenes/dos_discos.png){fig-align="center" width="50%"}
+:::
+
+::: {layout-ncol=3}
+![Imagen inicial](imagenes/disco.png){fig-align="center" width="50%"}
+
+![Interpolación](assets/disco_anillo.gif)
+
+![Imagen final](imagenes/anillo.png){fig-align="center" width="50%"}
+:::
+
+::: {layout-ncol=1}
+![Disco - Anillo - Dos discos](assets/disco_anillo_dos_discos.gif){fig-align="center" width="25%"}
+:::
+
+::: {layout-ncol=1}
+![Distintos betas](assets/beta_cuadrado_circulo.gif){fig-align="center" width="100%"}
+:::
+
+::: {layout-ncol=1}
+![Prueba aleatoria con dos imagenes completamente aleatorias](assets/THE_GOAT.gif){fig-align="center" width="50%"}
+:::
+
+
 
 ## Código
 
 El código completo está en la pestaña [Código](proyecto.ipynb) y en el
-[repositorio de GitHub](https://github.com/USUARIO/NOMBRE-REPO). <!-- TODO -->
+[repositorio de GitHub](https://github.com/morphing-ma4703/morphing). <!-- TODO -->
 
 ## Referencias
 
